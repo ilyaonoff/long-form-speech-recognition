@@ -1,0 +1,14 @@
+defaults:
+  - config
+  - _self_
+
+manifests:
+  clean: ???
+  snr40: ???
+out_dir: ???
+is_rnnt: true
+pretrained_name: "stt_en_conformer_transducer_large_ls"
+total_buffer_in_secs: 9.0
+chunk_len_in_secs: 4.5
+model_stride: 4
+batch_size: 1
