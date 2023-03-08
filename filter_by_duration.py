@@ -21,7 +21,7 @@ def filter_audio(infile: str, outfile: str, min_duration: Optional[float], max_d
     print(f"Done! There are {num_filtered} filtered samples")
 
 
-if __name__ == "__main":
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--manifest", type=str, required=True)
     parser.add_argument("--filtered_manifest", type=str, required=True)

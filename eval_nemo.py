@@ -68,6 +68,7 @@ def evaluate(cfg: Config):
             stdout=sys.stdout,
             stderr=sys.stderr
         )
+        p.wait()
         if p.returncode != 0:
             raise RuntimeError(f"Not zero return code {p.returncode} after cmd: {' '.join(cmd)}")
     print('Done!')

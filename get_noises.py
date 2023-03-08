@@ -6,10 +6,10 @@ import logging
 import multiprocessing
 import os
 import subprocess
-import tarfile
 import urllib.request
 import shutil
 
+from zipfile import ZipFile
 from sox import Transformer
 from tqdm import tqdm
 
@@ -68,9 +68,8 @@ def __maybe_download_file(destination: str, source: str):
 
 def __extract_file(filepath: str, data_dir: str):
     try:
-        tar = tarfile.open(filepath)
-        tar.extractall(data_dir)
-        tar.close()
+        with ZipFile(filepath, "r") as zipObj:
+            zipObj.extractall(data_dir)
     except Exception:
         logging.info("Not extracting. Maybe already there?")
 
@@ -102,7 +101,7 @@ def __process_transcript(file_path: str, dst_folder: str):
     return entry
 
 
-def __process_data(data_folder: str, dst_folder: str, manifest_file: str, num_workers: int):
+def __process_data(data_folder: str, dst_folder: str, manifest_file: str):
     """
     Converts flac to wav and build manifests's json
     Args:
@@ -120,8 +119,9 @@ def __process_data(data_folder: str, dst_folder: str, manifest_file: str, num_wo
     entries = []
 
     for filename in os.listdir(data_folder):
-        entries.append(__process_transcript(os.path.join(data_folder, filename), dst_folder))
-        files.append(os.path.join(data_folder, filename))
+        if filename.endswith(".wav"):
+            entries.append(__process_transcript(os.path.join(data_folder, filename), dst_folder))
+            files.append(os.path.join(data_folder, filename))
 
     with open(manifest_file, "w") as fout:
         for m in entries:
@@ -131,10 +131,8 @@ def __process_data(data_folder: str, dst_folder: str, manifest_file: str, num_wo
 def main():
     data_root = args.data_root
     data_set = "SLR28"
-    num_workers = args.num_workers
 
-    if args.log:
-        logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO)
     logging.info("\n\nWorking on: {0}".format(data_set))
     filepath = os.path.join(data_root, data_set + ".tar.gz")
     logging.info("Getting {0}".format(data_set))
@@ -145,8 +143,7 @@ def main():
     __process_data(
         os.path.join(data_root, "RIRS_NOISES", "pointsource_noises"),
         os.path.join(data_root, "RIRS_NOISES", "pointsource_noises") + "-processed",
-        os.path.join(data_root, "noises.json"),
-        num_workers=num_workers,
+        os.path.join(data_root, "noises.json")
     )
     logging.info("Done!")
 
