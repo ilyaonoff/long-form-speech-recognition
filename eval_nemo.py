@@ -61,7 +61,7 @@ def evaluate(cfg: Config):
         create_cmd = __create_ctc_cmd
 
     for tag, manifest_path in tqdm(cfg.manifests.items()):
-        out_manifest_path = os.path.join(cfg.out_dir, f"{tag}.jsonl")
+        out_manifest_path = os.path.join(cfg.out_dir, f"{tag}.json")
         cmd = create_cmd(cfg, manifest_path, out_manifest_path)
         p = subprocess.Popen(
             cmd,
